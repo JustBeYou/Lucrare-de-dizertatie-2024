@@ -1,0 +1,35 @@
+name: ci
+
+on:
+  pull_request: ~
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Test (${{ matrix.python-version }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ "ubuntu-latest" ]
+        python-version: [ "3.11" ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Conda setup
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-update-conda: true
+          python-version: ${{ matrix.python-version }}
+          environment-file: environment.yml
+          activate-environment: machine-learning
+
+      - name: CI
+        shell: bash -el {0}
+        run: |
+          ./script/ci.sh

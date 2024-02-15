@@ -1,0 +1,10 @@
+name: machine-learning
+channels:
+  - defaults
+dependencies:
+  - python=3.11
+  - mypy
+  - pylint
+  - black
+  - coverage
+prefix: /home/mferaru/miniconda3/envs/machine-learning
