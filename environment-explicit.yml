@@ -3,8 +3,13 @@ channels:
   - defaults
 dependencies:
   - python=3.11
-  - mypy
-  - pylint
   - black
   - coverage
+  - pytorch
+  - datasets
+  - evaluate
+  - sentencepiece
+  - transformers
+  - wandb
+  - isort
 prefix: /home/mferaru/miniconda3/envs/machine-learning
