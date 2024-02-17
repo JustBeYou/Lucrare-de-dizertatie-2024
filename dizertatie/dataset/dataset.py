@@ -60,9 +60,11 @@ class DatasetDownloader(abc.ABC):
         dataset = dataset.add_column("id", id_column)
 
         # Prepare a column for stratified sampling
-        stratify_column = "stratify" if "stratify" in dataset.features else "target"
-        if not isinstance(dataset.features[stratify_column], ClassLabel):
-            dataset = dataset.class_encode_column(stratify_column)
+        for column in ["stratify", "target"]:
+            if column in dataset.features and not isinstance(
+                dataset.features[column], ClassLabel
+            ):
+                dataset = dataset.class_encode_column(column)
 
         dataset.save_to_disk(download_path)
 
