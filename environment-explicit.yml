@@ -12,4 +12,7 @@ dependencies:
   - transformers
   - wandb
   - isort
+  - scikit-learn
+  - nltk
+  - rouge-score
 prefix: /home/mferaru/miniconda3/envs/machine-learning

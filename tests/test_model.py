@@ -7,6 +7,7 @@ from dizertatie.model.robert_classification import (
     RoBertClassifier,
     RoBertClassifierConfig,
 )
+from dizertatie.training.metrics import ClassificationMetrics, SummarizationMetrics
 from tests.testcase import TestCaseWithData
 
 
@@ -23,7 +24,19 @@ class ModelTestCase(TestCaseWithData):
         batch = dataset.select(range(3))
         self.assertListEqual(batch["id"], [2874, 26814, 3128])
 
-        self.__check_outputs(batch, model)
+        tokenized_batch = self.__tokenize_batch(batch, model)
+        outputs = model.model(**tokenized_batch)
+        self.assertTrue(hasattr(outputs, "logits"))
+        self.assertTrue(hasattr(outputs, "loss"))
+        self.assertTrue(outputs.loss > 0)
+
+        metrics = ClassificationMetrics()
+        logits, labels = (
+            outputs.logits.detach().numpy(),
+            tokenized_batch["labels"].detach().numpy(),
+        )
+        result = metrics.compute((logits, labels))
+        self.assertIsInstance(result, dict)
 
     def test_load_robart_model_for_ro_text_summarization(self):
         dataset = load(DATASET_CONFIG_TESTS, "RoTextSummarization")
@@ -35,9 +48,21 @@ class ModelTestCase(TestCaseWithData):
         batch = dataset.select(range(3))
         self.assertListEqual(batch["id"], [58679, 63956, 14193])
 
-        self.__check_outputs(batch, model)
+        tokenized_batch = self.__tokenize_batch(batch, model)
+        outputs = model.model.generate(
+            **tokenized_batch, max_new_tokens=16, do_sample=False
+        )
 
-    def __check_outputs(self, batch, model):
+        metrics = SummarizationMetrics(model.tokenizer)
+        predictions, labels = (
+            outputs.detach().numpy(),
+            tokenized_batch["labels"].detach().numpy(),
+        )
+        result = metrics.compute((predictions, labels))
+        self.assertIsInstance(result, dict)
+
+    @staticmethod
+    def __tokenize_batch(batch, model):
         tokenized_batch = batch.map(
             lambda x: model.tokenize(x, 16),
             remove_columns=list(
@@ -49,13 +74,8 @@ class ModelTestCase(TestCaseWithData):
             batched=True,
         ).rename_column("target", "labels")
         # BUG: .to_dict() is messing up with .with_format('torch')
-        tokenized_batch = tokenized_batch.with_format("torch")[:]
-        outputs = model.model(**tokenized_batch)
-        self.assertTrue(hasattr(outputs, "logits"))
-        self.assertTrue(hasattr(outputs, "loss"))
-        self.assertTrue(outputs.loss > 0)
+        return tokenized_batch.with_format("torch")[:]
 
 
 if __name__ == "__main__":
     unittest.main()
-0
