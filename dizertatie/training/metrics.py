@@ -1,11 +1,18 @@
-from typing import Dict, List, Tuple
+import abc
+from typing import Dict, Tuple
 
 import evaluate
 import numpy
 import torch
 
 
-class ClassificationMetrics:
+class Metrics(abc.ABC):
+    @abc.abstractmethod
+    def compute(self, eval_pred: Tuple[torch.Tensor, torch]) -> Dict[str, float]:
+        raise NotImplementedError
+
+
+class ClassificationMetrics(Metrics):
     def __init__(self):
         metrics = ["f1", "precision", "recall", "accuracy"]
         modes = ["macro", "weighted"]
@@ -32,12 +39,12 @@ class ClassificationMetrics:
         return results
 
 
-class SummarizationMetrics:
+class SummarizationMetrics(Metrics):
     def __init__(self, tokenizer):
         self.tokenizer = tokenizer
         self.rouge = evaluate.load("rouge")
 
-    def compute(self, eval_pred: Tuple[torch.Tensor, torch]):
+    def compute(self, eval_pred: Tuple[torch.Tensor, torch]) -> Dict[str, float]:
         predictions, labels = eval_pred
         decoded_predictions = self.tokenizer.batch_decode(
             predictions, skip_special_tokens=True

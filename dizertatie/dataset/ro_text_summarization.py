@@ -1,11 +1,11 @@
 from datasets import Dataset, load_dataset
 
-from dizertatie.dataset.dataset import Config, DatasetDownloader
+from dizertatie.dataset.dataset import DatasetConfig, DatasetDownloader
 
 
 class RoTextSummarization(DatasetDownloader):
     @staticmethod
-    def _download_and_prepare(_config: Config) -> Dataset:
+    def _download_and_prepare(_config: DatasetConfig) -> Dataset:
         dataset: Dataset = load_dataset(
             "readerbench/ro-text-summarization", split="all"
         )
