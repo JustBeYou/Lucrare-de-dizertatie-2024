@@ -2,6 +2,7 @@ import unittest
 
 from dizertatie.configs import DATASET_CONFIG_TESTS
 from dizertatie.dataset import load
+from dizertatie.model.robart_seq2seq import RoBartSeq2Seq, RoBartSeq2SeqConfig
 from dizertatie.model.robert_classification import (
     RoBertClassifier,
     RoBertClassifierConfig,
@@ -19,15 +20,34 @@ class ModelTestCase(TestCaseWithData):
         model = RoBertClassifier(model_config)
         self.assertIsNotNone(model)
 
-        dataset = dataset.rename_column("target", "labels")
         batch = dataset.select(range(3))
         self.assertListEqual(batch["id"], [2874, 26814, 3128])
 
+        self.__check_outputs(batch, model)
+
+    def test_load_robart_model_for_ro_text_summarization(self):
+        dataset = load(DATASET_CONFIG_TESTS, "RoTextSummarization")
+
+        model_config = RoBartSeq2SeqConfig()
+        model = RoBartSeq2Seq(model_config)
+        self.assertIsNotNone(model)
+
+        batch = dataset.select(range(3))
+        self.assertListEqual(batch["id"], [58679, 63956, 14193])
+
+        self.__check_outputs(batch, model)
+
+    def __check_outputs(self, batch, model):
         tokenized_batch = batch.map(
             lambda x: model.tokenize(x, 16),
-            remove_columns=["id", "text_ro"],
+            remove_columns=list(
+                filter(
+                    lambda x: x in batch.column_names,
+                    ["id", "text_ro", "target_ro", "stratify"],
+                )
+            ),
             batched=True,
-        )
+        ).rename_column("target", "labels")
         # BUG: .to_dict() is messing up with .with_format('torch')
         tokenized_batch = tokenized_batch.with_format("torch")[:]
         outputs = model.model(**tokenized_batch)
