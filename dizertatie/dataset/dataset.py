@@ -1,8 +1,6 @@
 import abc
 import dataclasses
-import os
 import pathlib
-from typing import Tuple
 
 from datasets import Dataset, load_from_disk
 
@@ -10,33 +8,38 @@ from datasets import Dataset, load_from_disk
 @dataclasses.dataclass
 class Config:
     path: pathlib.Path
+    force_overwrite: bool = False
 
 
 def load(config: Config, name: str) -> Dataset:
     path = pathlib.Path.joinpath(config.path, name)
+    if not path.exists():
+        path = pathlib.Path.joinpath(config.path, "download", name)
+
     return load_from_disk(str(path))
 
 
 class DatasetDownloader(abc.ABC):
     @classmethod
     def download(cls, config: Config):
-        name, dataset = cls._download_and_prepare(config)
+        download_path = pathlib.Path.joinpath(config.path, "download")
+        if not download_path.exists():
+            download_path.mkdir()
+        download_path = download_path.joinpath(cls.__name__)
+        if download_path.exists() and not config.force_overwrite:
+            return
+
+        dataset = cls._download_and_prepare(config)
         cls.__check_dataset(dataset)
 
         dataset = dataset.map(cls.__fix_diacritics_batched, batched=True)
         id_column = list(range(len(dataset)))
         dataset = dataset.add_column("id", id_column)
-
-        download_path = pathlib.Path.joinpath(config.path, "download")
-        if not download_path.exists():
-            download_path.mkdir()
-
-        path = download_path.joinpath(name)
-        dataset.save_to_disk(path)
+        dataset.save_to_disk(download_path)
 
     @staticmethod
     @abc.abstractmethod
-    def _download_and_prepare(config: Config) -> Tuple[str, Dataset]:
+    def _download_and_prepare(config: Config) -> Dataset:
         raise NotImplementedError
 
     @staticmethod

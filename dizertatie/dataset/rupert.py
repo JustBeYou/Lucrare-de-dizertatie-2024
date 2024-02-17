@@ -1,5 +1,4 @@
 import pathlib
-from typing import Tuple
 
 import pandas
 from datasets import Dataset
@@ -12,7 +11,7 @@ class Rupert(DatasetDownloader):
     n_top_authors = 25
 
     @staticmethod
-    def _download_and_prepare(config: Config) -> Tuple[str, Dataset]:
+    def _download_and_prepare(config: Config) -> Dataset:
         raw_path = pathlib.Path.joinpath(config.path, "raw_rupert.json")
         dataframe: DataFrame = pandas.read_json(raw_path)
 
@@ -28,4 +27,4 @@ class Rupert(DatasetDownloader):
         dataset = Dataset.from_pandas(dataframe[["text_ro", "autor"]])
         dataset = dataset.rename_column("autor", "target")
         dataset = dataset.remove_columns(["__index_level_0__"])
-        return "rupert", dataset
+        return dataset
