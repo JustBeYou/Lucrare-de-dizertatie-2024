@@ -15,4 +15,5 @@ dependencies:
   - scikit-learn
   - nltk
   - rouge-score
+  - accelerate
 prefix: /home/mferaru/miniconda3/envs/machine-learning

@@ -4,14 +4,14 @@ import pandas
 from datasets import Dataset
 from pandas import DataFrame
 
-from dizertatie.dataset.dataset import Config, DatasetDownloader
+from dizertatie.dataset.dataset import DatasetConfig, DatasetDownloader
 
 
 class Rupert(DatasetDownloader):
     n_top_authors = 25
 
     @staticmethod
-    def _download_and_prepare(config: Config) -> Dataset:
+    def _download_and_prepare(config: DatasetConfig) -> Dataset:
         raw_path = pathlib.Path.joinpath(config.path, "raw_rupert.json")
         dataframe: DataFrame = pandas.read_json(raw_path)
 

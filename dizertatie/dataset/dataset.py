@@ -7,7 +7,7 @@ from datasets import ClassLabel, Dataset, load_from_disk
 
 
 @dataclasses.dataclass
-class Config:
+class DatasetConfig:
     subsample_size: Optional[int]
     shuffle_seed: int
 
@@ -15,7 +15,7 @@ class Config:
     force_overwrite: bool = False
 
 
-def load(config: Config, name: str) -> Dataset:
+def load(config: DatasetConfig, name: str) -> Dataset:
     path = pathlib.Path.joinpath(config.path, name)
     if not path.exists():
         path = pathlib.Path.joinpath(config.path, "download", name)
@@ -27,7 +27,7 @@ def load(config: Config, name: str) -> Dataset:
     return __stratified_subsample(config, dataset)
 
 
-def __stratified_subsample(config: Config, dataset: Dataset) -> Dataset:
+def __stratified_subsample(config: DatasetConfig, dataset: Dataset) -> Dataset:
     stratify_column = "stratify" if "stratify" in dataset.features else "target"
 
     return dataset.train_test_split(
@@ -40,7 +40,7 @@ def __stratified_subsample(config: Config, dataset: Dataset) -> Dataset:
 
 class DatasetDownloader(abc.ABC):
     @classmethod
-    def download(cls, config: Config):
+    def download(cls, config: DatasetConfig):
         download_path = pathlib.Path.joinpath(config.path, "download")
         if not download_path.exists():
             download_path.mkdir()
@@ -70,7 +70,7 @@ class DatasetDownloader(abc.ABC):
 
     @staticmethod
     @abc.abstractmethod
-    def _download_and_prepare(config: Config) -> Dataset:
+    def _download_and_prepare(config: DatasetConfig) -> Dataset:
         raise NotImplementedError
 
     @staticmethod
