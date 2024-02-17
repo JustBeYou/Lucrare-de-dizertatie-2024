@@ -1,6 +1,6 @@
 import unittest
 
-from dizertatie.configs import DATASET_CONFIG
+from dizertatie.configs import DATASET_CONFIG_TESTS
 from dizertatie.dataset import DATASETS
 
 
@@ -11,4 +11,4 @@ class TestCaseWithData(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         for dataset_class in DATASETS:
-            dataset_class.download(DATASET_CONFIG)
+            dataset_class.download(DATASET_CONFIG_TESTS)
