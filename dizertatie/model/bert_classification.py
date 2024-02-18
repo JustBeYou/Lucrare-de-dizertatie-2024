@@ -6,13 +6,13 @@ from dizertatie.model.base import BaseModel
 
 
 @dataclasses.dataclass
-class RoBertClassifierConfig:
+class BertClassifierConfig:
     num_labels: int
     base_model: str = "dumitrescustefan/bert-base-romanian-cased-v1"
 
 
-class RoBertClassifier(BaseModel):
-    def __init__(self, config: RoBertClassifierConfig):
+class BertClassifier(BaseModel):
+    def __init__(self, config: BertClassifierConfig):
         super().__init__()
         self._tokenizer = AutoTokenizer.from_pretrained(config.base_model)
         self._model = AutoModelForSequenceClassification.from_pretrained(
