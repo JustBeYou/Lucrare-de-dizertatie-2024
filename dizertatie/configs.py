@@ -2,6 +2,7 @@ import pathlib
 
 from dizertatie.dataset.dataset import DatasetConfig
 from dizertatie.training.args import TrainingConfig
+from dizertatie.training.split import CrossValidationConfig
 
 PROJECT_SEED = 12022000
 
@@ -16,4 +17,8 @@ TRAINING_CONFIG_TESTS = TrainingConfig(
     batch_size=1,
     output_dir=pathlib.Path(__file__).parent.parent.joinpath("data", "training"),
     wandb_experiment=None,
+)
+
+CROSS_VALIDATION_CONFIG_TESTS = CrossValidationConfig(
+    shuffle_seed=PROJECT_SEED, k_folds=2
 )

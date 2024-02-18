@@ -2,13 +2,18 @@ import unittest
 
 from datasets import Dataset
 
-from dizertatie.configs import DATASET_CONFIG_TESTS, TRAINING_CONFIG_TESTS
+from dizertatie.configs import (
+    CROSS_VALIDATION_CONFIG_TESTS,
+    DATASET_CONFIG_TESTS,
+    TRAINING_CONFIG_TESTS,
+)
 from dizertatie.dataset import load
 from dizertatie.model.bart_seq2seq import BartSeq2Seq, BartSeq2SeqConfig
 from dizertatie.model.base import BaseModel
 from dizertatie.model.bert_classification import BertClassifier, BertClassifierConfig
 from dizertatie.training.args import make_training_args
 from dizertatie.training.metrics import ClassificationMetrics, SummarizationMetrics
+from dizertatie.training.split import split_k_fold
 from dizertatie.training.train import train_and_evaluate
 
 
@@ -46,6 +51,23 @@ class TrainingTestCase(unittest.TestCase):
         )
 
         self.assertTrue("eval_loss" in results)
+
+    def test_split_k_fold(self):
+        dataset = load(DATASET_CONFIG_TESTS, "Rupert")
+        splits_generator = split_k_fold(dataset, CROSS_VALIDATION_CONFIG_TESTS)
+
+        train_1, test_1 = next(splits_generator)
+        train_2, test_2 = next(splits_generator)
+
+        print(train_1["id"][0], train_2["id"][0], test_1["id"][0], test_2["id"][0])
+
+        self.assertEqual(train_1["id"][0], 4257)
+        self.assertEqual(train_2["id"][0], 4071)
+        self.assertEqual(test_1["id"][0], 4071)
+        self.assertEqual(test_2["id"][0], 4257)
+
+        train_test_intersect = set(train_1["id"]).intersection(set(test_1["id"]))
+        self.assertTrue(len(train_test_intersect) == 0)
 
     @staticmethod
     def __tokenize_dataset(dataset: Dataset, model: BaseModel) -> Dataset:
