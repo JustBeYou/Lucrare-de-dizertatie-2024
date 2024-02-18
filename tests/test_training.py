@@ -4,12 +4,9 @@ from datasets import Dataset
 
 from dizertatie.configs import DATASET_CONFIG_TESTS, TRAINING_CONFIG_TESTS
 from dizertatie.dataset import load
+from dizertatie.model.bart_seq2seq import BartSeq2Seq, BartSeq2SeqConfig
 from dizertatie.model.base import BaseModel
-from dizertatie.model.robart_seq2seq import RoBartSeq2Seq, RoBartSeq2SeqConfig
-from dizertatie.model.robert_classification import (
-    RoBertClassifier,
-    RoBertClassifierConfig,
-)
+from dizertatie.model.bert_classification import BertClassifier, BertClassifierConfig
 from dizertatie.training.args import make_training_args
 from dizertatie.training.metrics import ClassificationMetrics, SummarizationMetrics
 from dizertatie.training.train import train_and_evaluate
@@ -18,8 +15,8 @@ from dizertatie.training.train import train_and_evaluate
 class TrainingTestCase(unittest.TestCase):
     def test_training_classification(self):
         dataset = load(DATASET_CONFIG_TESTS, "RoSent")
-        model = RoBertClassifier(
-            RoBertClassifierConfig(num_labels=dataset.features["target"].num_classes)
+        model = BertClassifier(
+            BertClassifierConfig(num_labels=dataset.features["target"].num_classes)
         )
 
         tokenized_dataset = self.__tokenize_dataset(dataset, model)
@@ -36,7 +33,7 @@ class TrainingTestCase(unittest.TestCase):
 
     def test_training_summarization(self):
         dataset = load(DATASET_CONFIG_TESTS, "RoTextSummarization")
-        model = RoBartSeq2Seq(RoBartSeq2SeqConfig())
+        model = BartSeq2Seq(BartSeq2SeqConfig())
 
         tokenized_dataset = self.__tokenize_dataset(dataset, model)
 

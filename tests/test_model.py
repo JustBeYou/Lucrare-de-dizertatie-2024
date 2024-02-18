@@ -2,11 +2,8 @@ import unittest
 
 from dizertatie.configs import DATASET_CONFIG_TESTS
 from dizertatie.dataset import load
-from dizertatie.model.robart_seq2seq import RoBartSeq2Seq, RoBartSeq2SeqConfig
-from dizertatie.model.robert_classification import (
-    RoBertClassifier,
-    RoBertClassifierConfig,
-)
+from dizertatie.model.bart_seq2seq import BartSeq2Seq, BartSeq2SeqConfig
+from dizertatie.model.bert_classification import BertClassifier, BertClassifierConfig
 from dizertatie.training.metrics import ClassificationMetrics, SummarizationMetrics
 from tests.testcase import TestCaseWithData
 
@@ -15,10 +12,10 @@ class ModelTestCase(TestCaseWithData):
     def test_robert_model_for_ro_sent(self):
         dataset = load(DATASET_CONFIG_TESTS, "RoSent")
 
-        model_config = RoBertClassifierConfig(
+        model_config = BertClassifierConfig(
             num_labels=dataset.features["target"].num_classes
         )
-        model = RoBertClassifier(model_config)
+        model = BertClassifier(model_config)
         self.assertIsNotNone(model)
 
         batch = dataset.select(range(3))
@@ -41,8 +38,8 @@ class ModelTestCase(TestCaseWithData):
     def test_load_robart_model_for_ro_text_summarization(self):
         dataset = load(DATASET_CONFIG_TESTS, "RoTextSummarization")
 
-        model_config = RoBartSeq2SeqConfig()
-        model = RoBartSeq2Seq(model_config)
+        model_config = BartSeq2SeqConfig()
+        model = BartSeq2Seq(model_config)
         self.assertIsNotNone(model)
 
         batch = dataset.select(range(3))
