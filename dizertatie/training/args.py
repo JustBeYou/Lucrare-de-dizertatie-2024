@@ -7,11 +7,10 @@ from transformers import Seq2SeqTrainingArguments, TrainingArguments
 
 @dataclasses.dataclass
 class TrainingConfig:
-    wandb_experiment: Optional[str]
-
     batch_size: int
     epochs: int
     output_dir: Path
+    generation_max_length: Optional[int] = None
 
 
 __DEFAULT_ARGS = {
@@ -23,19 +22,27 @@ __DEFAULT_ARGS = {
 
 
 def make_training_args(
-    config: TrainingConfig, seq2seq: bool = False
+    config: TrainingConfig,
+    run_name: Optional[str] = None,
+    report_to: str = "none",
+    seq2seq: bool = False,
 ) -> TrainingArguments:
     common_args = dict(__DEFAULT_ARGS)
     common_args["output_dir"] = config.output_dir
     common_args["per_device_train_batch_size"] = config.batch_size
     common_args["per_device_eval_batch_size"] = config.batch_size
     common_args["num_train_epochs"] = config.epochs
-    common_args["report_to"] = (
-        "wandb" if config.wandb_experiment is not None else "none"
-    )
-    common_args["run_name"] = config.wandb_experiment
+    common_args["report_to"] = report_to
+    common_args["run_name"] = run_name
 
     if seq2seq:
-        return Seq2SeqTrainingArguments(predict_with_generate=True, **common_args)
+        if config.generation_max_length is None:
+            raise ValueError("generation_max_length is required")
+
+        return Seq2SeqTrainingArguments(
+            predict_with_generate=True,
+            generation_max_length=config.generation_max_length,
+            **common_args
+        )
 
     return TrainingArguments(**common_args)

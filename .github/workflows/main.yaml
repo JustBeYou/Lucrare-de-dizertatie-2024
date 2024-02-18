@@ -30,6 +30,8 @@ jobs:
           activate-environment: machine-learning
 
       - name: CI
+        env:
+          WANDB_API_KEY: ${{ secrets.WANDB_API_KEY }}
         shell: bash -el {0}
         run: |
           ./script/ci.sh

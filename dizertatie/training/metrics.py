@@ -1,19 +1,25 @@
 import abc
-from typing import Dict, Tuple
+from typing import Dict, Optional, Tuple
 
 import evaluate
 import numpy
 import torch
 
+from dizertatie.model.base import BaseModel
+
 
 class Metrics(abc.ABC):
+    def __init__(self, model: Optional[BaseModel] = None):
+        self.model = model
+
     @abc.abstractmethod
     def compute(self, eval_pred: Tuple[torch.Tensor, torch]) -> Dict[str, float]:
         raise NotImplementedError
 
 
 class ClassificationMetrics(Metrics):
-    def __init__(self):
+    def __init__(self, model: Optional[BaseModel] = None):
+        super().__init__(model)
         metrics = ["f1", "precision", "recall", "accuracy"]
         modes = ["macro", "weighted"]
 
@@ -40,8 +46,12 @@ class ClassificationMetrics(Metrics):
 
 
 class SummarizationMetrics(Metrics):
-    def __init__(self, tokenizer):
-        self.tokenizer = tokenizer
+    def __init__(self, model: BaseModel):
+        super().__init__(model)
+        if model is None:
+            raise ValueError("model is required")
+
+        self.tokenizer = model.tokenizer
         self.rouge = evaluate.load("rouge")
 
     def compute(self, eval_pred: Tuple[torch.Tensor, torch]) -> Dict[str, float]:
