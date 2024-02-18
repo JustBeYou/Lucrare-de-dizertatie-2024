@@ -45,7 +45,7 @@ class TrainingTestCase(unittest.TestCase):
         results = train_and_evaluate(
             model,
             make_training_args(TRAINING_CONFIG_TESTS, seq2seq=True),
-            SummarizationMetrics(model.tokenizer),
+            SummarizationMetrics(model),
             tokenized_dataset.select(range(0, 5)),
             tokenized_dataset.select(range(5, 10)),
         )

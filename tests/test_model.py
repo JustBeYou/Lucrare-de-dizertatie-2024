@@ -50,7 +50,7 @@ class ModelTestCase(TestCaseWithData):
             **tokenized_batch, max_new_tokens=16, do_sample=False
         )
 
-        metrics = SummarizationMetrics(model.tokenizer)
+        metrics = SummarizationMetrics(model)
         predictions, labels = (
             outputs.detach().numpy(),
             tokenized_batch["labels"].detach().numpy(),
