@@ -1,10 +1,10 @@
 import unittest
 
-from dizertatie.configs import DATASET_CONFIG_TESTS
 from dizertatie.dataset import load
 from dizertatie.model.bart_seq2seq import BartSeq2Seq, BartSeq2SeqConfig
 from dizertatie.model.bert_classification import BertClassifier, BertClassifierConfig
 from dizertatie.training.metrics import ClassificationMetrics, SummarizationMetrics
+from tests.configs import DATASET_CONFIG_TESTS
 from tests.testcase import TestCaseWithData
 
 

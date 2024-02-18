@@ -18,6 +18,7 @@ __DEFAULT_ARGS = {
     "weight_decay": 1e-2,
     "evaluation_strategy": "epoch",
     "load_best_model_at_end": False,
+    "save_strategy": "no",
 }
 
 

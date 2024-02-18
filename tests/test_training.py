@@ -2,11 +2,6 @@ import unittest
 
 from datasets import Dataset
 
-from dizertatie.configs import (
-    CROSS_VALIDATION_CONFIG_TESTS,
-    DATASET_CONFIG_TESTS,
-    TRAINING_CONFIG_TESTS,
-)
 from dizertatie.dataset import load
 from dizertatie.model.bart_seq2seq import BartSeq2Seq, BartSeq2SeqConfig
 from dizertatie.model.base import BaseModel
@@ -15,6 +10,11 @@ from dizertatie.training.args import make_training_args
 from dizertatie.training.metrics import ClassificationMetrics, SummarizationMetrics
 from dizertatie.training.split import split_k_fold
 from dizertatie.training.train import train_and_evaluate
+from tests.configs import (
+    CROSS_VALIDATION_CONFIG_TESTS,
+    DATASET_CONFIG_TESTS,
+    TRAINING_CONFIG_TESTS,
+)
 
 
 class TrainingTestCase(unittest.TestCase):
