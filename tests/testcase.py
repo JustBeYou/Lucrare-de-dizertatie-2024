@@ -1,7 +1,7 @@
 import unittest
 
-from dizertatie.configs import DATASET_CONFIG_TESTS
 from dizertatie.dataset import DATASETS
+from tests.configs import DATASET_CONFIG_TESTS
 
 
 class TestCaseWithData(unittest.TestCase):

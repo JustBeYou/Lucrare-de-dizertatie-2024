@@ -13,7 +13,7 @@ class Metrics(abc.ABC):
         self.model = model
 
     @abc.abstractmethod
-    def compute(self, eval_pred: Tuple[torch.Tensor, torch]) -> Dict[str, float]:
+    def compute(self, eval_pred: Tuple[torch.Tensor, torch.Tensor]) -> Dict[str, float]:
         raise NotImplementedError
 
 
@@ -54,8 +54,11 @@ class SummarizationMetrics(Metrics):
         self.tokenizer = model.tokenizer
         self.rouge = evaluate.load("rouge")
 
-    def compute(self, eval_pred: Tuple[torch.Tensor, torch]) -> Dict[str, float]:
+    def compute(self, eval_pred: Tuple[torch.Tensor, torch.Tensor]) -> Dict[str, float]:
         predictions, labels = eval_pred
+        predictions = numpy.where(
+            predictions != -100, predictions, self.tokenizer.pad_token_id
+        )
         decoded_predictions = self.tokenizer.batch_decode(
             predictions, skip_special_tokens=True
         )

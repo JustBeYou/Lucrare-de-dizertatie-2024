@@ -2,9 +2,9 @@ import unittest
 
 from datasets import Dataset
 
-from dizertatie.configs import DATASET_CONFIG_TESTS
 from dizertatie.dataset import DATASETS
 from dizertatie.dataset.dataset import load
+from tests.configs import DATASET_CONFIG_TESTS
 from tests.testcase import TestCaseWithData
 
 

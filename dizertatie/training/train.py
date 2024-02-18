@@ -33,6 +33,8 @@ def train_and_evaluate(
         compute_metrics=metrics.compute,
     )
 
+    # Initial evaluation, before training
+    trainer.evaluate()
     trainer.train()
 
     return trainer.evaluate()

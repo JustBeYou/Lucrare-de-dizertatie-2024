@@ -1,5 +1,6 @@
 import dataclasses
 import gc
+import os
 from typing import Type
 
 import torch
@@ -69,10 +70,12 @@ def run_experiment(config: ExperimentConfig):
             print(f"# Results: {results}")
 
             __clear_memory_cache()
+            wandb.finish()
     finally:
         print("### Finished experiment ###")
         wandb.finish()
-        wandb._cleanup_media_tmp_dir()
+
+        os.system("rm -rf wandb")
 
 
 def __prepare_columns(dataset: Dataset) -> Dataset:
@@ -89,4 +92,6 @@ def __prepare_columns(dataset: Dataset) -> Dataset:
 def __clear_memory_cache():
     gc.collect()
     if torch.cuda.is_available():
+        print(f"# CUDA Memory before free:", torch.cuda.mem_get_info())
         torch.cuda.empty_cache()
+        print(f"# CUDA Memory after free:", torch.cuda.mem_get_info())

@@ -1,8 +1,8 @@
 import os
 import unittest
 
-from dizertatie.configs import RUN_EXPERIMENT_CONFIG_TESTS
 from dizertatie.experiment.run import run_experiment
+from tests.configs import RUN_EXPERIMENT_CONFIG_TESTS
 from tests.testcase import TestCaseWithData
 
 

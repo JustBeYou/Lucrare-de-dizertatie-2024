@@ -1,11 +1,15 @@
 name: machine-learning
 channels:
+  - pytorch
+  - nvidia
+  - conda-forge
   - defaults
 dependencies:
   - python=3.11
   - black
   - coverage
   - pytorch
+  - pytorch-cuda=11.8
   - datasets
   - evaluate
   - sentencepiece
