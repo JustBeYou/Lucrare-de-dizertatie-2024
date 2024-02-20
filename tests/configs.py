@@ -3,8 +3,8 @@ import pathlib
 from dizertatie.dataset.dataset import DatasetConfig
 from dizertatie.experiment.run import ExperimentConfig
 from dizertatie.experiment.wandb import WandbConfig
-from dizertatie.model.bart_seq2seq import BartSeq2Seq, BartSeq2SeqConfig
 from dizertatie.model.bert_classification import BertClassifier, BertClassifierConfig
+from dizertatie.model.seq2seq import ModelSeq2Seq, ModelSeq2SeqConfig
 from dizertatie.training.args import TrainingConfig
 from dizertatie.training.metrics import ClassificationMetrics, SummarizationMetrics
 from dizertatie.training.split import CrossValidationConfig
@@ -53,8 +53,8 @@ RUN_EXPERIMENT_CONFIG_TESTS = {
     "summarization": ExperimentConfig(
         dataset_name="RoTextSummarization",
         dataset_config=DATASET_SMALL_CONFIG_TESTS,
-        model_class=BartSeq2Seq,
-        model_config=BartSeq2SeqConfig(max_tokens=MAX_INPUT_TOKENS),
+        model_class=ModelSeq2Seq,
+        model_config=ModelSeq2SeqConfig(max_tokens=MAX_INPUT_TOKENS),
         train_config=TRAINING_CONFIG_TESTS,
         metrics_class=SummarizationMetrics,
         cross_validation_config=CROSS_VALIDATION_CONFIG_TESTS,
