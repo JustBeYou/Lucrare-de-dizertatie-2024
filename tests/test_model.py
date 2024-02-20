@@ -1,8 +1,8 @@
 import unittest
 
 from dizertatie.dataset import load
-from dizertatie.model.bart_seq2seq import BartSeq2Seq, BartSeq2SeqConfig
 from dizertatie.model.bert_classification import BertClassifier, BertClassifierConfig
+from dizertatie.model.seq2seq import ModelSeq2Seq, ModelSeq2SeqConfig
 from dizertatie.training.metrics import ClassificationMetrics, SummarizationMetrics
 from tests.configs import DATASET_CONFIG_TESTS
 from tests.testcase import TestCaseWithData
@@ -38,8 +38,8 @@ class ModelTestCase(TestCaseWithData):
     def test_load_robart_model_for_ro_text_summarization(self):
         dataset = load(DATASET_CONFIG_TESTS, "RoTextSummarization")
 
-        model_config = BartSeq2SeqConfig()
-        model = BartSeq2Seq(model_config)
+        model_config = ModelSeq2SeqConfig()
+        model = ModelSeq2Seq(model_config)
         self.assertIsNotNone(model)
 
         batch = dataset.select(range(3))

@@ -7,18 +7,18 @@ from dizertatie.model.base import BaseModel, BaseModelConfig
 
 
 @dataclasses.dataclass
-class BartSeq2SeqConfig(BaseModelConfig):
+class ModelSeq2SeqConfig(BaseModelConfig):
     base_model: str = "Iulian277/ro-bart-512"
 
 
-class BartSeq2Seq(BaseModel):
-    def __init__(self, config: BartSeq2SeqConfig):
+class ModelSeq2Seq(BaseModel):
+    def __init__(self, config: ModelSeq2SeqConfig):
         super().__init__(config)
         self.config = config
 
     @property
     def name(self):
-        return f"Bart-{self.config.base_model.replace('/', '-')}"
+        return f"Model-{self.config.base_model.replace('/', '-')}"
 
     @functools.cached_property
     def tokenizer(self):

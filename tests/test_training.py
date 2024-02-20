@@ -3,9 +3,9 @@ import unittest
 from datasets import Dataset
 
 from dizertatie.dataset import load
-from dizertatie.model.bart_seq2seq import BartSeq2Seq, BartSeq2SeqConfig
 from dizertatie.model.base import BaseModel
 from dizertatie.model.bert_classification import BertClassifier, BertClassifierConfig
+from dizertatie.model.seq2seq import ModelSeq2Seq, ModelSeq2SeqConfig
 from dizertatie.training.args import make_training_args
 from dizertatie.training.metrics import ClassificationMetrics, SummarizationMetrics
 from dizertatie.training.split import split_k_fold
@@ -38,7 +38,7 @@ class TrainingTestCase(unittest.TestCase):
 
     def test_training_summarization(self):
         dataset = load(DATASET_CONFIG_TESTS, "RoTextSummarization")
-        model = BartSeq2Seq(BartSeq2SeqConfig())
+        model = ModelSeq2Seq(ModelSeq2SeqConfig())
 
         tokenized_dataset = self.__tokenize_dataset(dataset, model)
 
