@@ -1,13 +1,13 @@
 import dataclasses
 import gc
 import os
-from typing import Type
+from typing import Optional, Type
 
 import torch
 import wandb
 from datasets import Dataset
 
-from dizertatie.dataset.dataset import DatasetConfig, load
+from dizertatie.dataset.dataset import DatasetConfig, TranslationConfig, load
 from dizertatie.experiment.wandb import WandbConfig, wandb_init
 from dizertatie.model.base import BaseModel, BaseModelConfig
 from dizertatie.training.args import TrainingConfig, make_training_args
@@ -28,6 +28,8 @@ class ExperimentConfig:
 
     cross_validation_config: CrossValidationConfig
     report_config: WandbConfig
+
+    translation_config: Optional[TranslationConfig] = None
 
 
 def run_experiment(config: ExperimentConfig):

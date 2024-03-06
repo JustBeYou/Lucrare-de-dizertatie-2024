@@ -4,7 +4,12 @@ import unittest
 from datasets import Dataset
 
 from dizertatie.dataset import DATASETS
-from dizertatie.dataset.dataset import DatasetConfig, add_translations, load
+from dizertatie.dataset.dataset import (
+    DatasetConfig,
+    TranslationConfig,
+    load,
+    translate_dataset,
+)
 from tests.configs import DATASET_CONFIG_TESTS, PROJECT_SEED
 from tests.testcase import TestCaseWithData
 
@@ -18,18 +23,21 @@ class DatasetTestCase(TestCaseWithData):
 
     def test_load_translations_subsample(self):
         data_path = pathlib.Path(__file__).parent.parent.joinpath("data")
-        translation_path = data_path.joinpath("rupert_subsample_translations.json")
         dataset_translation_config = DatasetConfig(
             subsample_size=5_000,
             shuffle_seed=PROJECT_SEED,
             path=data_path,
         )
+        translation_config = TranslationConfig(
+            path=data_path.joinpath("rupert_subsample_translations.json"),
+            translator="mistral",
+        )
 
         dataset = load(dataset_translation_config, "Rupert")
-        translated_dataset = add_translations(dataset, translation_path)
+        translated_dataset = translate_dataset(dataset, translation_config)
         self.assertTrue(isinstance(translated_dataset, Dataset))
         self.assertTrue(
-            translated_dataset[1337]["text_en_mistral"]
+            translated_dataset[1337]["text_ro"]
             .strip()
             .startswith("Psalm VI You stir up")
         )

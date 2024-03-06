@@ -28,14 +28,32 @@ def load(config: DatasetConfig, name: str) -> Dataset:
     return __stratified_subsample(config, dataset)
 
 
-def add_translations(dataset: Dataset, path: pathlib.Path) -> Dataset:
-    translations = pandas.read_json(str(path))
-    assert translations["id"].to_list() == dataset["id"]
-    for column in translations.columns:
-        if column == "id":
-            continue
+@dataclasses.dataclass
+class TranslationConfig:
+    path: pathlib.Path
+    translator: str
 
-        dataset = dataset.add_column(column, translations[column].to_list())
+
+def translate_dataset(dataset: Dataset, config: TranslationConfig) -> Dataset:
+    translations = pandas.read_json(str(config.path))
+    assert translations["id"].to_list() == dataset["id"]
+
+    translate_target = "target_ro" in dataset.column_names
+
+    dataset = dataset.remove_columns(["text_ro", "target"])
+    if "target_ro" in dataset.column_names:
+        dataset = dataset.remove_columns(["target_ro"])
+
+    dataset = dataset.add_column(
+        "text_ro", translations[f"text_en_{config.translator}"].to_list()
+    )
+    if translate_target:
+        dataset = dataset.add_column(
+            "target", translations[f"target_en_{config.translator}"].to_list()
+        )
+        dataset = dataset.add_column(
+            "target_ro", translations[f"target_en_{config.translator}"].to_list()
+        )
 
     return dataset
 
