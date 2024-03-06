@@ -1,8 +1,6 @@
 import pathlib
 
 from dizertatie.configs.common import PROJECT_SEED
-from dizertatie.configs.multi_baseline import get_multilingual_configs
-from dizertatie.configs.ro_baselines import get_ro_baselines_config
 from dizertatie.dataset import RoSent, RoTextSummarization, Rupert
 from dizertatie.dataset.dataset import DatasetConfig
 from dizertatie.experiment.run import run_experiment
@@ -20,7 +18,7 @@ def main():
     RoTextSummarization.download(config)
     Rupert.download(config)
 
-    configs = get_multilingual_configs()
+    configs = []
 
     for config in configs:
         run_experiment(config)
