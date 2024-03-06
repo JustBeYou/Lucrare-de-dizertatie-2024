@@ -3,6 +3,7 @@ import dataclasses
 import pathlib
 from typing import Optional
 
+import pandas
 from datasets import ClassLabel, Dataset, load_from_disk
 
 
@@ -25,6 +26,18 @@ def load(config: DatasetConfig, name: str) -> Dataset:
         return dataset
 
     return __stratified_subsample(config, dataset)
+
+
+def add_translations(dataset: Dataset, path: pathlib.Path) -> Dataset:
+    translations = pandas.read_json(str(path))
+    assert translations["id"].to_list() == dataset["id"]
+    for column in translations.columns:
+        if column == "id":
+            continue
+
+        dataset = dataset.add_column(column, translations[column].to_list())
+
+    return dataset
 
 
 def __stratified_subsample(config: DatasetConfig, dataset: Dataset) -> Dataset:
