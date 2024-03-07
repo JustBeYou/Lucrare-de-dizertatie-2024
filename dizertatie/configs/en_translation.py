@@ -2,7 +2,7 @@
 from typing import List
 
 from dizertatie.configs.common import DATA_PATH, PROJECT_SEED, TRAIN_DATA_PATH
-from dizertatie.dataset.dataset import DatasetConfig
+from dizertatie.dataset.dataset import DatasetConfig, TranslationConfig
 from dizertatie.experiment.run import ExperimentConfig
 from dizertatie.experiment.wandb import WandbConfig
 from dizertatie.model.bert_classification import BertClassifier, BertClassifierConfig
@@ -13,7 +13,9 @@ from dizertatie.training.split import CrossValidationConfig
 
 
 def get_en_translation_config() -> List[ExperimentConfig]:
-    return []
+    return [
+        __make_ro_sent_config()
+    ]
 
 
 __report_config = WandbConfig(project=f"Dizertatie - 5 - Test English Translation")
@@ -65,6 +67,11 @@ def __make_ro_sent_config() -> ExperimentConfig:
         metrics_class=ClassificationMetrics,
         cross_validation_config=__cv_config,
         report_config=__report_config,
+
+        translation_config=TranslationConfig(
+            path=DATA_PATH.joinpath("translations", "ro_sent_subsample_translations.json"),
+            translator="mistral"
+        )
     )
 
 

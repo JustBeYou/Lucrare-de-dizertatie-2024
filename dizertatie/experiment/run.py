@@ -7,7 +7,7 @@ import torch
 import wandb
 from datasets import Dataset
 
-from dizertatie.dataset.dataset import DatasetConfig, TranslationConfig, load
+from dizertatie.dataset.dataset import DatasetConfig, TranslationConfig, load, translate_dataset
 from dizertatie.experiment.wandb import WandbConfig, wandb_init
 from dizertatie.model.base import BaseModel, BaseModelConfig
 from dizertatie.training.args import TrainingConfig, make_training_args
@@ -34,12 +34,18 @@ class ExperimentConfig:
 
 def run_experiment(config: ExperimentConfig):
     dataset = load(config.dataset_config, config.dataset_name)
+    if config.translation_config is not None:
+        dataset = translate_dataset(dataset, config.translation_config)
+
     tokenizer_model = config.model_class(config.model_config)
 
     dataset = dataset.map(tokenizer_model.tokenize, batched=True)
     dataset = dataset.with_format("torch")
 
     run_name = f"{config.dataset_name}_{tokenizer_model.name}"
+    if config.translation_config is not None:
+        run_name = f"{run_name}_EN_{config.translation_config.translator}"
+
     print(f"### Running experiment: {run_name} ###")
     print(f"## W&B project: {config.report_config.project}")
     print(f"## GPU available: {torch.cuda.is_available()}")

@@ -188,3 +188,4 @@ data/download/*
 data/translations/*
 data/keys/*
 wandb/
+setup_env_vastai.sh

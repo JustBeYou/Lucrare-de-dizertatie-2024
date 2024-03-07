@@ -1,6 +1,7 @@
 import pathlib
 
 from dizertatie.configs.common import PROJECT_SEED
+from dizertatie.configs.en_translation import get_en_translation_config
 from dizertatie.dataset import RoSent, RoTextSummarization, Rupert
 from dizertatie.dataset.dataset import DatasetConfig
 from dizertatie.experiment.run import run_experiment
