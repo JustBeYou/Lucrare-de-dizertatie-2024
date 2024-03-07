@@ -16,6 +16,7 @@ class BertClassifier(BaseModel):
     def __init__(self, config: BertClassifierConfig):
         super().__init__(config)
         self.config = config
+        self._model = None
 
     @property
     def name(self):
@@ -25,11 +26,16 @@ class BertClassifier(BaseModel):
     def tokenizer(self):
         return AutoTokenizer.from_pretrained(self.config.base_model)
 
-    @functools.cached_property
+    @property
     def model(self):
-        return AutoModelForSequenceClassification.from_pretrained(
-            self.config.base_model,
-            ignore_mismatched_sizes=True,
-            problem_type="single_label_classification",
-            num_labels=self.config.num_labels,
-        )
+        if self._model is None:
+            self._model = AutoModelForSequenceClassification.from_pretrained(
+                self.config.base_model,
+                ignore_mismatched_sizes=True,
+                problem_type="single_label_classification",
+                num_labels=self.config.num_labels,
+            )
+        return self._model
+
+    def to(self, device):
+        self._model = self._model.to(device)

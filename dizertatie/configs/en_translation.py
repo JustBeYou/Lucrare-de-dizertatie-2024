@@ -13,8 +13,10 @@ from dizertatie.training.split import CrossValidationConfig
 
 
 def get_en_translation_config() -> List[ExperimentConfig]:
+    translators = ["mistral", "chatgpt3.5", "deepl", "gcloud"]
+
     return [
-        __make_ro_sent_config()
+        __make_ro_sent_config(t) for t in translators
     ]
 
 
@@ -47,7 +49,7 @@ def __make_ro_text_summarization_config() -> ExperimentConfig:
     )
 
 
-def __make_ro_sent_config() -> ExperimentConfig:
+def __make_ro_sent_config(translator: str) -> ExperimentConfig:
     return ExperimentConfig(
         dataset_name="RoSent",
         dataset_config=DatasetConfig(
@@ -70,7 +72,7 @@ def __make_ro_sent_config() -> ExperimentConfig:
 
         translation_config=TranslationConfig(
             path=DATA_PATH.joinpath("translations", "ro_sent_subsample_translations.json"),
-            translator="mistral"
+            translator=translator
         )
     )
 

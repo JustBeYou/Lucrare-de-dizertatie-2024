@@ -1,12 +1,13 @@
 import dataclasses
 import gc
 import os
-from typing import Optional, Type
+from typing import Optional, Type, List
 
 import torch
 import wandb
 from datasets import Dataset
 
+import accelerate
 from dizertatie.dataset.dataset import DatasetConfig, TranslationConfig, load, translate_dataset
 from dizertatie.experiment.wandb import WandbConfig, wandb_init
 from dizertatie.model.base import BaseModel, BaseModelConfig
@@ -30,7 +31,22 @@ class ExperimentConfig:
     report_config: WandbConfig
 
     translation_config: Optional[TranslationConfig] = None
+    torch_device = None
 
+
+def run_experiments_parallel(configs: List[ExperimentConfig]):
+    print(f"#### Running parallel experiments ####")
+    distributed_state = accelerate.PartialState()
+    for config in configs:
+        config.torch_device = distributed_state.device
+
+    ids = list(range(len(configs)))
+    with distributed_state.split_between_processes(ids) as split_ids:
+        print(f"### Spawning process {distributed_state.process_index} with experiments {split_ids}")
+        split_configs = [configs[i] for i in split_ids]
+
+        for config in split_configs:
+            run_experiment(config)
 
 def run_experiment(config: ExperimentConfig):
     dataset = load(config.dataset_config, config.dataset_name)
@@ -49,6 +65,8 @@ def run_experiment(config: ExperimentConfig):
     print(f"### Running experiment: {run_name} ###")
     print(f"## W&B project: {config.report_config.project}")
     print(f"## GPU available: {torch.cuda.is_available()}")
+    if config.torch_device:
+        print(f"## GPU Device: {config.torch_device}")
     print(f"## Dataset name: {config.dataset_name}")
     print(f"## Model name: {config.model_class.__name__}")
     print(f"## Metrics name: {config.metrics_class.__name__}")
@@ -63,6 +81,8 @@ def run_experiment(config: ExperimentConfig):
         for i, (train_set, test_set) in enumerate(folds):
             print(f"# Fold: {i + 1}/{config.cross_validation_config.k_folds}")
             trainable_model = config.model_class(config.model_config)
+            if config.torch_device:
+                trainable_model.to(config.torch_device)
             results = train_and_evaluate(
                 trainable_model,
                 make_training_args(
@@ -74,6 +94,7 @@ def run_experiment(config: ExperimentConfig):
                 config.metrics_class(tokenizer_model),
                 __prepare_columns(train_set),
                 __prepare_columns(test_set),
+                torch_device=config.torch_device
             )
             print(f"# Results: {results}")
 

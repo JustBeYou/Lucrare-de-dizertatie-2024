@@ -18,7 +18,7 @@ class BaseModel(abc.ABC):
     def name(self):
         raise NotImplementedError
 
-    @functools.cached_property
+    @property
     @abc.abstractmethod
     def model(self):
         raise NotImplementedError
@@ -26,6 +26,10 @@ class BaseModel(abc.ABC):
     @functools.cached_property
     @abc.abstractmethod
     def tokenizer(self):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def to(self, device):
         raise NotImplementedError
 
     def tokenize(self, examples: dict, max_tokens: Optional[int] = None) -> dict:
