@@ -38,22 +38,16 @@ def translate_dataset(dataset: Dataset, config: TranslationConfig) -> Dataset:
     translations = pandas.read_json(str(config.path))
     assert translations["id"].to_list() == dataset["id"]
 
-    translate_target = "target_ro" in dataset.column_names
+    # Translate input text
+    dataset = dataset.remove_columns(["text_ro"])
+    dataset = dataset.add_column("text_ro", translations[f"text_en_{config.translator}"].to_list())
 
-    dataset = dataset.remove_columns(["text_ro", "target"])
+    # Translate output text if necessary
     if "target_ro" in dataset.column_names:
-        dataset = dataset.remove_columns(["target_ro"])
-
-    dataset = dataset.add_column(
-        "text_ro", translations[f"text_en_{config.translator}"].to_list()
-    )
-    if translate_target:
-        dataset = dataset.add_column(
-            "target", translations[f"target_en_{config.translator}"].to_list()
-        )
-        dataset = dataset.add_column(
-            "target_ro", translations[f"target_en_{config.translator}"].to_list()
-        )
+        dataset = dataset.remove_columns(["target_ro", "target"])
+        target_en = translations[f"target_en_{config.translator}"].to_list()
+        dataset = dataset.add_column("target", target_en)
+        dataset = dataset.add_column("target_ro", target_en)
 
     return dataset
 
