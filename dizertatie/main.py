@@ -1,4 +1,6 @@
 import pathlib
+import sys
+from pprint import pprint
 
 from dizertatie.configs.common import PROJECT_SEED
 from dizertatie.configs.en_translation import get_en_translation_config
@@ -20,9 +22,13 @@ def main():
     Rupert.download(config)
 
     configs = get_en_translation_config()
-    for config in configs:
-        run_experiment(config)
 
+    translator  = sys.argv[-1]
+    if translator in configs:
+        for config in configs[translator]:
+            run_experiment(config)
+    else:
+        pprint(configs)
 
 if __name__ == "__main__":
     main()
