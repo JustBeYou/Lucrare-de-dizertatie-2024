@@ -64,7 +64,7 @@ def __make_ro_sent_config(translator: str) -> ExperimentConfig:
             num_labels=2,
         ),
         train_config=TrainingConfig(
-            batch_size=32, epochs=10, output_dir=TRAIN_DATA_PATH
+            batch_size=32, epochs=1, output_dir=TRAIN_DATA_PATH
         ),
         metrics_class=ClassificationMetrics,
         cross_validation_config=__cv_config,
