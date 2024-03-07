@@ -4,7 +4,7 @@ from dizertatie.configs.common import PROJECT_SEED
 from dizertatie.configs.en_translation import get_en_translation_config
 from dizertatie.dataset import RoSent, RoTextSummarization, Rupert
 from dizertatie.dataset.dataset import DatasetConfig
-from dizertatie.experiment.run import run_experiment
+from dizertatie.experiment.run import run_experiment, run_experiments_parallel
 
 
 def main():
@@ -19,10 +19,8 @@ def main():
     RoTextSummarization.download(config)
     Rupert.download(config)
 
-    configs = []
-
-    for config in configs:
-        run_experiment(config)
+    configs = get_en_translation_config()
+    run_experiments_parallel(configs)
 
 
 if __name__ == "__main__":
