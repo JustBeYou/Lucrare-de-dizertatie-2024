@@ -104,7 +104,7 @@ def run_experiment(config: ExperimentConfig):
         print("### Finished experiment ###")
         wandb.finish()
 
-        os.system("rm -rf wandb")
+        # os.system("rm -rf wandb")
 
 
 def __prepare_columns(dataset: Dataset) -> Dataset:
