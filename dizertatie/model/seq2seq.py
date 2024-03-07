@@ -26,4 +26,4 @@ class ModelSeq2Seq(BaseModel):
         return AutoTokenizer.from_pretrained(self.config.base_model)
 
     def _init_model(self):
-        return AutoModelForSeq2SeqLM.from_pretrained(self.config.base_model)
+        self._model = AutoModelForSeq2SeqLM.from_pretrained(self.config.base_model)

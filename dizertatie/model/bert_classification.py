@@ -27,7 +27,7 @@ class BertClassifier(BaseModel):
         return AutoTokenizer.from_pretrained(self.config.base_model)
 
     def _init_model(self):
-        return AutoModelForSequenceClassification.from_pretrained(
+        self._model = AutoModelForSequenceClassification.from_pretrained(
                 self.config.base_model,
                 ignore_mismatched_sizes=True,
                 problem_type="single_label_classification",
