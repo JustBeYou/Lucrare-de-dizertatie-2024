@@ -12,6 +12,7 @@ class BaseModelConfig(abc.ABC):
 class BaseModel(abc.ABC):
     def __init__(self, config: BaseModelConfig):
         self.base_config = config
+        self._model = None
 
     @property
     @abc.abstractmethod
@@ -19,17 +20,21 @@ class BaseModel(abc.ABC):
         raise NotImplementedError
 
     @property
-    @abc.abstractmethod
     def model(self):
-        raise NotImplementedError
+        self._init_model()
+        return self._model
 
     @functools.cached_property
     @abc.abstractmethod
     def tokenizer(self):
         raise NotImplementedError
 
-    @abc.abstractmethod
     def to(self, device):
+        self._init_model()
+        self._model = self._model.to(device)
+
+    @abc.abstractmethod
+    def _init_model(self):
         raise NotImplementedError
 
     def tokenize(self, examples: dict, max_tokens: Optional[int] = None) -> dict:

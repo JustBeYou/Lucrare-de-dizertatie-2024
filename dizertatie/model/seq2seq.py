@@ -25,11 +25,5 @@ class ModelSeq2Seq(BaseModel):
     def tokenizer(self):
         return AutoTokenizer.from_pretrained(self.config.base_model)
 
-    @property
-    def model(self):
-        if self._model is None:
-            self._model = AutoModelForSeq2SeqLM.from_pretrained(self.config.base_model)
-        return self._model
-
-    def to(self, device):
-        self._model = self._model.to(device)
+    def _init_model(self):
+        return AutoModelForSeq2SeqLM.from_pretrained(self.config.base_model)
