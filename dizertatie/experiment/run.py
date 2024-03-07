@@ -68,6 +68,7 @@ def run_experiment(config: ExperimentConfig):
     if config.torch_device:
         print(f"## GPU Device: {config.torch_device}")
     print(f"## Dataset name: {config.dataset_name}")
+    print(f"## Translator: {config.translation_config.translator}")
     print(f"## Model name: {config.model_class.__name__}")
     print(f"## Metrics name: {config.metrics_class.__name__}")
     print(f"## Cross validation with K: {config.cross_validation_config.k_folds}")

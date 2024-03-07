@@ -21,7 +21,7 @@ def get_en_translation_config() -> List[ExperimentConfig]:
 
 
 __report_config = WandbConfig(project=f"Dizertatie - 5 - Test English Translation")
-__cv_config = CrossValidationConfig(shuffle_seed=PROJECT_SEED, k_folds=5)
+__cv_config = CrossValidationConfig(shuffle_seed=PROJECT_SEED, k_folds=2)
 
 
 def __make_ro_text_summarization_config() -> ExperimentConfig:
