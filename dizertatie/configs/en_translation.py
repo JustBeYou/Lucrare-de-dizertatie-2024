@@ -26,8 +26,8 @@ def get_en_translation_config() -> Dict[str, List[ExperimentConfig]]:
     return r
 
 
-__report_config = WandbConfig(project=f"Dizertatie - 5 - Test English Translation")
-__cv_config = CrossValidationConfig(shuffle_seed=PROJECT_SEED, k_folds=2)
+__report_config = WandbConfig(project=f"Dizertatie - 2 - 5-fold CV Results")
+__cv_config = CrossValidationConfig(shuffle_seed=PROJECT_SEED, k_folds=5)
 
 
 def __make_ro_text_summarization_config(translator: str) -> ExperimentConfig:
@@ -41,13 +41,13 @@ def __make_ro_text_summarization_config(translator: str) -> ExperimentConfig:
         model_class=ModelSeq2Seq,
         model_config=ModelSeq2SeqConfig(
             base_model="facebook/bart-base",
-            max_tokens=16,  # ~ 95% texts have fewer than this tokens
+            max_tokens=990,  # ~ 95% texts have fewer than this tokens
         ),
         train_config=TrainingConfig(
             batch_size=8,
-            epochs=1,
+            epochs=10,
             output_dir=TRAIN_DATA_PATH,
-            generation_max_length=16,  # ~95% summarizes have fewer than this tokens
+            generation_max_length=110,  # ~95% summarizes have fewer than this tokens
         ),
         metrics_class=SummarizationMetrics,
         cross_validation_config=__cv_config,
@@ -71,11 +71,11 @@ def __make_ro_sent_config(translator: str) -> ExperimentConfig:
         model_class=BertClassifier,
         model_config=BertClassifierConfig(
             base_model="google-bert/bert-base-cased",
-            max_tokens=16,  # ~ 95% of texts have fewer tokens
+            max_tokens=208,  # ~ 95% of texts have fewer tokens
             num_labels=2,
         ),
         train_config=TrainingConfig(
-            batch_size=32, epochs=1, output_dir=TRAIN_DATA_PATH
+            batch_size=32, epochs=10, output_dir=TRAIN_DATA_PATH
         ),
         metrics_class=ClassificationMetrics,
         cross_validation_config=__cv_config,
@@ -99,11 +99,11 @@ def __make_rupert_config(translator: str) -> ExperimentConfig:
         model_class=BertClassifier,
         model_config=BertClassifierConfig(
             base_model="google-bert/bert-base-cased",
-            max_tokens=16,  # ~ 90% of poems have fewer tokens
+            max_tokens=512,  # ~ 90% of poems have fewer tokens
             num_labels=25,
         ),
         train_config=TrainingConfig(
-            batch_size=16, epochs=1, output_dir=TRAIN_DATA_PATH
+            batch_size=16, epochs=10, output_dir=TRAIN_DATA_PATH
         ),
         metrics_class=ClassificationMetrics,
         cross_validation_config=__cv_config,
