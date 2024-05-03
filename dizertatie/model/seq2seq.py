@@ -15,6 +15,7 @@ class ModelSeq2Seq(BaseModel):
     def __init__(self, config: ModelSeq2SeqConfig):
         super().__init__(config)
         self.config = config
+        self._model = None
 
     @property
     def name(self):
@@ -24,6 +25,5 @@ class ModelSeq2Seq(BaseModel):
     def tokenizer(self):
         return AutoTokenizer.from_pretrained(self.config.base_model)
 
-    @functools.cached_property
-    def model(self):
-        return AutoModelForSeq2SeqLM.from_pretrained(self.config.base_model)
+    def _init_model(self):
+        self._model = AutoModelForSeq2SeqLM.from_pretrained(self.config.base_model)

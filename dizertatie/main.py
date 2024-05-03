@@ -1,8 +1,9 @@
 import pathlib
+import sys
+from pprint import pprint
 
 from dizertatie.configs.common import PROJECT_SEED
-from dizertatie.configs.multi_baseline import get_multilingual_configs
-from dizertatie.configs.ro_baselines import get_ro_baselines_config
+from dizertatie.configs.en_translation import get_en_translation_config
 from dizertatie.dataset import RoSent, RoTextSummarization, Rupert
 from dizertatie.dataset.dataset import DatasetConfig
 from dizertatie.experiment.run import run_experiment
@@ -20,11 +21,14 @@ def main():
     RoTextSummarization.download(config)
     Rupert.download(config)
 
-    configs = get_multilingual_configs()
+    configs = get_en_translation_config()
 
-    for config in configs:
-        run_experiment(config)
-
+    translator  = sys.argv[-1]
+    if translator in configs:
+        for config in configs[translator]:
+            run_experiment(config)
+    else:
+        pprint(configs)
 
 if __name__ == "__main__":
     main()

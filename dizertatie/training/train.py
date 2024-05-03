@@ -18,6 +18,7 @@ def train_and_evaluate(
     metrics: Metrics,
     train_set: Dataset,
     test_set: Dataset,
+    torch_device=None
 ) -> Dict[str, float]:
     trainer_class = Trainer
 

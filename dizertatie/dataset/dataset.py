@@ -1,7 +1,7 @@
 import abc
 import dataclasses
 import pathlib
-from typing import Optional
+from typing import Optional, List
 
 import pandas
 from datasets import ClassLabel, Dataset, load_from_disk
@@ -28,17 +28,40 @@ def load(config: DatasetConfig, name: str) -> Dataset:
     return __stratified_subsample(config, dataset)
 
 
-def add_translations(dataset: Dataset, path: pathlib.Path) -> Dataset:
-    translations = pandas.read_json(str(path))
-    assert translations["id"].to_list() == dataset["id"]
-    for column in translations.columns:
-        if column == "id":
-            continue
+@dataclasses.dataclass
+class TranslationConfig:
+    path: pathlib.Path
+    translator: str
 
-        dataset = dataset.add_column(column, translations[column].to_list())
+
+def translate_dataset(dataset: Dataset, config: TranslationConfig) -> Dataset:
+    translations = pandas.read_json(str(config.path))
+    assert translations["id"].to_list() == dataset["id"]
+
+    # Translate input text
+    dataset = dataset.remove_columns(["text_ro"])
+    dataset = dataset.add_column("text_ro", translations[f"text_en_{config.translator}"].to_list())
+
+    # Translate output text if necessary
+    if "target_ro" in dataset.column_names:
+        dataset = dataset.remove_columns(["target_ro", "target"])
+        target_en = translations[f"target_en_{config.translator}"].to_list()
+        dataset = dataset.add_column("target", target_en)
+        dataset = dataset.add_column("target_ro", target_en)
 
     return dataset
 
+def load_translations(dataset: Dataset, path: str, translators: List[str]) -> Dataset:
+    translations = pandas.read_json(str(path))
+    print(path, translations.columns)
+    assert translations["id"].to_list() == dataset["id"]
+
+    for translator in translators:
+        dataset = dataset.add_column(f"text_en_{translator}", translations[f"text_en_{translator}"].to_list())
+        if f'target_en_{translator}' in translations.columns:
+            dataset = dataset.add_column(f'target_en_{translator}', translations[f"target_en_{translator}"].to_list())
+
+    return dataset
 
 def __stratified_subsample(config: DatasetConfig, dataset: Dataset) -> Dataset:
     stratify_column = "stratify" if "stratify" in dataset.features else "target"
