@@ -1,7 +1,7 @@
 import abc
 import dataclasses
 import pathlib
-from typing import Optional
+from typing import Optional, List
 
 import pandas
 from datasets import ClassLabel, Dataset, load_from_disk
@@ -51,6 +51,17 @@ def translate_dataset(dataset: Dataset, config: TranslationConfig) -> Dataset:
 
     return dataset
 
+def load_translations(dataset: Dataset, path: str, translators: List[str]) -> Dataset:
+    translations = pandas.read_json(str(path))
+    print(path, translations.columns)
+    assert translations["id"].to_list() == dataset["id"]
+
+    for translator in translators:
+        dataset = dataset.add_column(f"text_en_{translator}", translations[f"text_en_{translator}"].to_list())
+        if f'target_en_{translator}' in translations.columns:
+            dataset = dataset.add_column(f'target_en_{translator}', translations[f"target_en_{translator}"].to_list())
+
+    return dataset
 
 def __stratified_subsample(config: DatasetConfig, dataset: Dataset) -> Dataset:
     stratify_column = "stratify" if "stratify" in dataset.features else "target"

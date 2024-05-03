@@ -17,7 +17,31 @@ DATA_PATH = pathlib.Path(__file__).parent.parent.parent.joinpath("data")
 
 
 def main():
-    raise Exception("Be careful, translation incurs costs.")
+    __translate_ro_text_summarization_long()
+
+
+def __translate_ro_text_summarization_long():
+    ro_text_summarization = load(
+        DatasetConfig(shuffle_seed=PROJECT_SEED, subsample_size=8_000, path=DATA_PATH),
+        "RoTextSummarization",
+    )
+
+    with open(
+        DATA_PATH.joinpath("translations", "ro_text_summarization_ids.json"), "w"
+    ) as f:
+        json.dump(ro_text_summarization["id"], f)
+
+    texts = list(map(prep_text, ro_text_summarization["text_ro"]))
+    deepl_translate(texts, "deepl_ro_text_summarization_long/deepl_ro_text_summarization_long.json", 10)
+
+def __translate_ro_text_summarization_short():
+    ro_text_summarization = load(
+        DatasetConfig(shuffle_seed=PROJECT_SEED, subsample_size=8_000, path=DATA_PATH),
+        "RoTextSummarization",
+    )
+
+    texts = list(map(prep_text, ro_text_summarization["target_ro"]))
+    deepl_translate(texts, "deepl_ro_text_summarization_summary/deepl_ro_text_summarization_summary.json", 10)
 
 
 def __translate_rupert():
